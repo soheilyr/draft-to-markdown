@@ -1,15 +1,34 @@
 import Head from "next/head";
-
+import "./../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { useState } from "react";
-import {EditorState , convertToRaw} from 'draft-js'
+import { EditorState, convertToRaw } from "draft-js";
 import dynamic from "next/dynamic";
+import axiosInstance from "@/component/axiosConfig/axiosConfig";
+import { useRouter } from "next/router";
 
 export default function Home() {
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
+  const router = useRouter();
+
 
   const handleSave = () => {
     const contentState = editorState.getCurrentContent();
     const contentStateJson = JSON.stringify(convertToRaw(contentState));
+    try {
+      axiosInstance
+        .post("/api/draft", { content: contentStateJson })
+        .then((response) => {
+          if (response.data.success) {
+            alert("Draft saved successfully");
+            router.push("/draft");
+          }
+        })
+        .catch((error) => {
+          console.error("Error saving draft", error);
+        });
+    } catch (error) {
+      console.log(error);
+    }
     console.log("SAVED !");
   };
 

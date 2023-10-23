@@ -20,7 +20,7 @@ const DraftsPage = () => {
 
   useEffect(() => {
     axiosInstance
-      .get("/api/getDrafts")
+      .get("/api/draft")
       .then((response) => {
         setDrafts(response.data.drafts);
       })
