@@ -1,9 +1,22 @@
 import Head from "next/head";
-import { Inter } from "@next/font/google";
 
-const inter = Inter({ subsets: ["latin"] });
+import { useState } from "react";
+import {EditorState , convertToRaw} from 'draft-js'
+import dynamic from "next/dynamic";
 
 export default function Home() {
+  const [editorState, setEditorState] = useState(EditorState.createEmpty());
+
+  const handleSave = () => {
+    const contentState = editorState.getCurrentContent();
+    const contentStateJson = JSON.stringify(convertToRaw(contentState));
+    console.log("SAVED !");
+  };
+
+  const Editor = dynamic(
+    () => import("react-draft-wysiwyg").then((mod) => mod.Editor),
+    { ssr: false }
+  );
   return (
     <>
       <Head>
@@ -12,6 +25,20 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+
+      <div>
+        <h1>Testing Editor</h1>
+      </div>
+      <div>
+        <Editor
+          wrapperClassName="wrapper-class"
+          editorClassName="editor-class"
+          toolbarClassName="toolbar-class"
+          onEditorStateChange={setEditorState}
+          editorState={editorState}
+        />
+        <button onClick={handleSave}>SAVE</button>
+      </div>
     </>
   );
 }
